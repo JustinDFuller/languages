@@ -9,14 +9,16 @@ const readFileAsync = promisify(readFile)
 const execAsync = promisify(exec)
 
 async function executeTests(dir) {
-  const execOptions = { cwd: path.join(__dirname, dir) }
+  const cwd = path.join(__dirname, dir)
+  const execOptions = { cwd }
 
   const [expected, ...results] = await Promise.all([
-    readFileAsync(path.join(__dirname, dir, 'expected'), 'utf8'),
+    readFileAsync(path.join(cwd, 'expected'), 'utf8'),
     execAsync(`javac Main.java && java Main`, execOptions),
     execAsync(`node index.js`, execOptions),
     execAsync(`runhaskell main.hs`, execOptions),
     execAsync(`python main.py`, execOptions),
+    execAsync(`./main.sh`, execOptions)
   ])
 
   return results.find(result => assert.deepStrictEqual(result.stdout, expected)) || `${dir} tested OK.`
