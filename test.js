@@ -1,0 +1,32 @@
+const path = require('path')
+const assert = require('assert')
+const { promisify } = require('util')
+const { exec } = require('child_process')
+const { readdir, readFile } = require('fs')
+
+const readdirAsync = promisify(readdir)
+const readFileAsync = promisify(readFile)
+const execAsync = promisify(exec)
+
+async function executeTests(dir) {
+  const execOptions = { cwd: path.join(__dirname, dir) }
+
+  const [expected, ...results] = await Promise.all([
+    readFileAsync(path.join(__dirname, dir, 'expected'), 'utf8'),
+    execAsync(`javac Main.java && java Main`, execOptions),
+    execAsync(`node index.js`, execOptions),
+    execAsync(`runhaskell main.hs`, execOptions),
+    execAsync(`python main.py`, execOptions),
+  ])
+
+  return results.find(result => assert.deepStrictEqual(result.stdout, expected)) || `${dir} tested OK.`
+}
+
+readdirAsync(__dirname, { withFileTypes: true })
+  .then(files => files
+      .filter(f => f.isDirectory() && !f.name.includes('git'))
+      .map(f => f.name))
+  .then(dirs => dirs.map(executeTests))
+  .then(promises => Promise.all(promises))
+  .then(console.dir)
+  .catch(e => console.error(e) || process.exit(1))
