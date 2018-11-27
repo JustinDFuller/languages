@@ -14,11 +14,11 @@ async function executeTests(dir) {
 
   const [expected, ...results] = await Promise.all([
     readFileAsync(path.join(cwd, 'expected'), 'utf8'),
-    execAsync(`javac Main.java && java Main`, execOptions),
-    execAsync(`node index.js`, execOptions),
-    execAsync(`runhaskell main.hs`, execOptions),
-    execAsync(`python main.py`, execOptions),
-    execAsync(`./main.sh`, execOptions)
+    execAsync(`javac Main.java && java Main < input`, execOptions),
+    execAsync(`node index.js < input`, execOptions),
+    execAsync(`runhaskell main.hs < input`, execOptions),
+    execAsync(`python main.py < input`, execOptions),
+    execAsync(`./main.sh < input`, execOptions)
   ])
 
   return results.find(result => assert.deepStrictEqual(result.stdout, expected)) || `${dir} tested OK.`

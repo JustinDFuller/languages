@@ -8,3 +8,8 @@ To run tests:
 ```
 node test.js
 ```
+
+To create a new folder
+```
+./create.sh MY_NEW_FOLDER
+```
