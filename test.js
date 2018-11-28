@@ -14,14 +14,16 @@ async function executeTests(dir) {
 
   const [expected, ...results] = await Promise.all([
     readFileAsync(path.join(cwd, 'expected'), 'utf8'),
-    execAsync(`javac Main.java && java Main < input`, execOptions),
-    execAsync(`node index.js < input`, execOptions),
-    execAsync(`runhaskell main.hs < input`, execOptions),
-    execAsync(`python main.py < input`, execOptions),
-    execAsync(`./main.sh < input`, execOptions)
+    execAsync(`javac Main.java && java Main < input`, execOptions).then(res => ({ ...res, type: 'java' })),
+    execAsync(`node index.js < input`, execOptions).then(res => ({ ...res, type: 'node' })),
+    execAsync(`runhaskell main.hs < input`, execOptions).then(res => ({ ...res, type: 'haskell' })),
+    execAsync(`python main.py < input`, execOptions).then(res => ({ ...res, type: 'python' })),
+    execAsync(`./main.sh < input`, execOptions).then(res => ({ ...res, type: 'shell' }))
   ])
 
-  return results.find(result => assert.deepStrictEqual(result.stdout, expected)) || `${dir} tested OK.`
+  return results.find(result => 
+    assert.deepStrictEqual(result.stdout, expected, `[${result.type}] Expected "${result.stdout}" to deeply equal "${expected}".`)) 
+    || `${dir} tested OK.`
 }
 
 readdirAsync(__dirname, { withFileTypes: true })
