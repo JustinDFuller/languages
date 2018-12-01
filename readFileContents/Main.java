@@ -17,5 +17,7 @@ public class Main {
     while (fileInput.hasNextLine()) {
       System.out.println(fileInput.nextLine());
     }
+
+    fileInput.close();
   }
 }
