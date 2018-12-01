@@ -14,6 +14,15 @@ To create a new folder
 ./create.sh MY_NEW_FOLDER
 ```
 
+## Languages
+* [x] Bash
+* [x] JavaScript
+* [x] Java
+* [x] Python
+* [x] Haskell
+* [ ] Go
+* [ ] C
+
 ## Tests
 
 Just a brainstorm of tests I could do.
